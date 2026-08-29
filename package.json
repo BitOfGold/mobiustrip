@@ -1,0 +1,18 @@
+{
+  "name": "mobiustrip",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Möbius Trip - a js13kgames Möbius-strip superscaler racer",
+  "type": "module",
+  "scripts": {
+    "dev": "node tools/build.mjs dev",
+    "ship": "node tools/build.mjs ship",
+    "size": "node tools/build.mjs size",
+    "test": "node tools/test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "roadroller": "^2.1.0",
+    "terser": "^5.31.0"
+  }
+}
