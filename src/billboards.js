@@ -3,7 +3,7 @@
 // steps for that chunky arcade zoom.
 
 import { compileProgram, uniforms } from './render.js';
-import { CELL, ATLAS_SIZE } from './atlas.js';
+import { CELL, ATLAS_W, ATLAS_H } from './atlas.js';
 
 const FLOATS = 14;
 
@@ -25,7 +25,7 @@ void main() {
   float zoom = 12. / dist;
   float k = max(floor(zoom * 32.), 1.) / 32. / zoom;
   vec3 wp = ipos + right * ((q.x - .5) * abs(isize.x) * k) + iup * (q.y * isize.y * k);
-  vUV = (icell + vec2(isize.x < 0. ? 1. - q.x : q.x, 1. - q.y)) * ${CELL}. / ${ATLAS_SIZE}.;
+  vUV = (icell + vec2(isize.x < 0. ? 1. - q.x : q.x, 1. - q.y)) * vec2(${CELL / ATLAS_W}, ${CELL / ATLAS_H});
   vTint = itint;
   gl_Position = viewProj * vec4(wp, 1.);
 }`;

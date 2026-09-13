@@ -1,17 +1,17 @@
-// sprite sheet: one 512px canvas drawn at startup. unicorns on the top rows,
-// small props on row 3, the font on rows 4-7.
+// sprite sheet: one canvas drawn at startup. unicorns on the top rows,
+// small props on row 3, the font on rows 4-8.
 
-export const CELL = 64, ATLAS_SIZE = 512;
+export const CELL = 64, ATLAS_W = 512, ATLAS_H = 576;
 
 export const CELL_SPARK = [2, 3], CELL_PUFF = [3, 3];
 export const CELL_CRYSTAL = [4, 3], CELL_FLOWER = [5, 3];
 export const CELL_STAR = [6, 3], CELL_GLOW = [7, 3];
 
 // every string the game prints has to be spelled from these
-export const GLYPHS = '0123456789ACDEFGHILNOPRSTUWY/:.MBÖ';
+export const GLYPHS = '0123456789ACDEFGHILNOPRSTUWY/:.MBÖV';
 const glyphCells = {};
 GLYPHS.split('').forEach((ch, i) => {
-  glyphCells[ch] = i < 32 ? [i % 8, 4 + (i >> 3)] : [i - 32, 3];
+  glyphCells[ch] = i < 32 ? [i % 8, 4 + (i >> 3)] : i < 34 ? [i - 32, 3] : [i - 34, 8];
 });
 export const glyphCell = (ch) => glyphCells[ch];
 
@@ -114,7 +114,8 @@ function drawUnicorn(ctx, yawK, gallop) {
 
 export function buildAtlas() {
   const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = ATLAS_SIZE;
+  canvas.width = ATLAS_W;
+  canvas.height = ATLAS_H;
   const ctx = canvas.getContext('2d');
 
   const inCell = (col, row, fn) => {

@@ -55,12 +55,22 @@ let playerPos = RACER_COUNT;
 const prevBoost = new Float32Array(RACER_COUNT);
 let prevSlow = 0, screechCd = 0;
 
+// credit line as real dom so the link is clickable; hidden once racing
+const credit = document.createElement('div');
+credit.innerHTML =
+  'Made by <a href="https://x.com/BitOfGold" target="_blank" style="color:#9df">@BitOfGold</a> for #js13k 2026';
+credit.style.cssText =
+  'position:fixed;bottom:1.5vmin;left:0;right:0;text-align:center;' +
+  'color:#cbd8ff;font:2.4vmin monospace;opacity:.85;z-index:1';
+document.body.appendChild(credit);
+
 function startRace(difficulty) {
   race = makeRace(difficulty);
   player = race.racers[0];
   mode = 'intro';
   introT = 0;
   setMusic(true);
+  credit.hidden = true;
 }
 
 // any key or tap: unlock audio, pick a menu row, skip the intro, or restart
@@ -97,9 +107,9 @@ const DECOS = [];
       : hueRGB(i * 0.13, [], 0.8, 0.18);
     DECOS.push({
       u,
-      v: (i % 2 ? 1 : -1) * (W + 0.7 + Math.sin(i * 7.3) * 0.25),
+      v: (i % 2 ? 1 : -1) * (W + 0.9 + Math.sin(i * 7.3) * 0.25),
       cell: cells[kind],
-      size: 0.55 + 0.3 * Math.abs(Math.sin(i * 3.1)),
+      size: 0.9 + 0.5 * Math.abs(Math.sin(i * 3.1)),
       r, g, b,
     });
   }
@@ -303,7 +313,7 @@ function frame(t) {
       const r = race.racers[i];
       const tint = TINTS[i];
       const mirror = racerSprite(r);
-      lifted(THICK, mirror * 1.3, 1.3, UNICORN_CELL, tint[0], tint[1], tint[2], 1);
+      lifted(THICK, mirror * 2.0, 2.0, UNICORN_CELL, tint[0], tint[1], tint[2], 1);
     }
 
     for (const c of race.crystals) {
@@ -320,8 +330,8 @@ function frame(t) {
   // glowing dots along both rails
   for (let i = 0; i * 0.16 < U_PERIOD; i++) {
     const px = i & 1;
-    put(i * 0.16, W - 0.08, THICK, 0.34, 0.34, CELL_GLOW, 1, px ? 0.55 : 1, px ? 0.85 : 1, 1);
-    put(i * 0.16, -(W - 0.08), THICK, 0.34, 0.34, CELL_GLOW, 1, px ? 0.55 : 1, px ? 0.85 : 1, 1);
+    put(i * 0.16, W - 0.08, THICK, 0.5, 0.5, CELL_GLOW, 1, px ? 0.55 : 1, px ? 0.85 : 1, 1);
+    put(i * 0.16, -(W - 0.08), THICK, 0.5, 0.5, CELL_GLOW, 1, px ? 0.55 : 1, px ? 0.85 : 1, 1);
   }
 
   renderParticles(sprites);
@@ -331,17 +341,21 @@ function frame(t) {
     const rb = timeS * 0.25, wave = timeS * 3;
     if (MOBILE) {
       const ts = fitSize('MÖBIUS', 0.34, 1.7);
-      drawText('MÖBIUS', 0, 0.36 + ts * 0.58, ts, 1, 1, 1, 1, rb, wave);
-      drawText('TRIP', 0, 0.36 - ts * 0.58, ts, 1, 1, 1, 1, rb + 0.55, wave + 5.6);
+      drawText('MÖBIUS', 0, 0.42 + ts * 0.58, ts, 1, 1, 1, 1, rb, wave);
+      drawText('TRIP', 0, 0.42 - ts * 0.58, ts, 1, 1, 1, 1, rb + 0.55, wave + 5.6);
     } else {
-      drawText('MÖBIUS TRIP', 0, 0.33, 0.34, 1, 1, 1, 1, rb, wave);
+      drawText('MÖBIUS TRIP', 0, 0.38, 0.34, 1, 1, 1, 1, rb, wave);
     }
-    drawText('A RACE ON A STRIP WITH ONE SIDE', 0, MOBILE ? 0.05 : 0.18,
-      fitSize('A RACE ON A STRIP WITH ONE SIDE', 0.05, 1.8), 0.8, 0.85, 1, 0.9);
-    drawText('CHOOSE OPPONENTS:', 0, -0.1, 0.06, 1, 1, 1, 0.9);
-    drawText('1 FOAL', 0, -0.24, 0.08, 0.6, 1, 0.7);
-    drawText('2 STALLION', 0, -0.38, 0.08, 1, 0.9, 0.5);
-    drawText('3 ALICORN', 0, -0.52, 0.08, 1, 0.6, 0.7);
+    // help in place of the subtitle, spelled from the letters the font has
+    const hs = fitSize('COLLECT GREEN CRYSTALS. DODGE RED', MOBILE ? 0.06 : 0.08, 1.7);
+    if (!MOBILE) drawText('ARROWS OR WASD TO DRIVE', 0, 0.21, hs, 0.8, 0.85, 1, 0.8);
+    drawText('COLLECT GREEN CRYSTALS. DODGE RED', 0, 0.12, hs, 0.8, 0.85, 1, 0.8);
+    drawText('CROSS THE MIDDLE: BOOST', 0, 0.03, hs, 0.8, 0.85, 1, 0.8);
+    const ms = MOBILE ? 0.08 : 0.11;
+    drawText('CHOOSE OPPONENTS:', 0, -0.1, MOBILE ? 0.06 : 0.08, 1, 1, 1, 0.9);
+    drawText('1 FOAL', 0, -0.24, ms, 0.6, 1, 0.7);
+    drawText('2 STALLION', 0, -0.38, ms, 1, 0.9, 0.5);
+    drawText('3 ALICORN', 0, -0.52, ms, 1, 0.6, 0.7);
   }
   if (mode === 'count') {
     const n = Math.ceil(COUNTDOWN - countT - 0.2);

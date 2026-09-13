@@ -13,13 +13,13 @@ export function makeInput() {
   if (MOBILE) {
     // stopPropagation keeps button presses away from the tap handler, and
     // pointer capture makes sure we get the release even off the button
-    const mkButton = (label, right, dir) => {
+    const mkButton = (path, right, dir) => {
       const b = document.createElement('div');
-      b.textContent = label;
+      b.innerHTML = `<svg viewBox="0 0 10 10" style="width:9vmin;height:9vmin"><path d="${path}" fill="#fffa"/></svg>`;
       b.style.cssText =
         `position:fixed;bottom:4vmin;right:${right}vmin;width:20vmin;height:20vmin;` +
-        'border-radius:50%;background:#fff2;border:2px solid #fff5;color:#fffa;' +
-        'font:bold 10vmin/19vmin monospace;text-align:center;' +
+        'border-radius:50%;background:#fff2;border:2px solid #fff5;' +
+        'display:flex;align-items:center;justify-content:center;' +
         'user-select:none;-webkit-user-select:none;touch-action:none;z-index:1';
       b.addEventListener('pointerdown', (e) => {
         e.stopPropagation();
@@ -30,8 +30,8 @@ export function makeInput() {
       b.addEventListener('pointercancel', () => { if (touchSteer === dir) touchSteer = 0; });
       document.body.appendChild(b);
     };
-    mkButton('◀', 27, -1);
-    mkButton('▶', 4, 1);
+    mkButton('M6.5 2 2 5l4.5 3z', 27, -1);
+    mkButton('M3.5 2 8 5 3.5 8z', 4, 1);
   }
 
   const state = { steer: 0, throttle: 0, brake: false };

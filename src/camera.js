@@ -11,7 +11,8 @@ const LOOK_AHEAD = 4;
 const OMEGA = 13;
 const UP_LAG = 0.06;
 const ROLL_MAX = 4;
-const SHAKE_F = [6.0, 7.9, 5.3, 43, 56, 74, 24, 31, 19];
+const SHAKE_F = [6.0, 7.9, 5.3, 43, 56, 74];
+const PAIN_AMP = 0.5;
 
 // whichever camera ran last leaves its basis here for the sky and sprites
 export const camState = {
@@ -43,6 +44,8 @@ export function makeChaseCam() {
     upLag: [0, 1, 0],
     fov: 1.1,
     _shake: 0,
+    _pain: 0,
+    _prevSlow: 0,
   };
 
   // snap behind the player, e.g. at race start
@@ -97,15 +100,19 @@ export function makeChaseCam() {
     for (let i = 0; i < 3; i++)
       vTgt[i] = lf.p[i] + lf.n[i] * 0.8;
     for (let i = 0; i < 3; i++) vf.p[i] += vf.n[i] * (THICK + c.h);
-    // shake: slow sway that grows with speed, a buzz on boost, a judder
-    // when slowed
+    // shake: slow sway that grows with speed, a buzz on boost
     c._shake += dt;
     const sway = Math.min(0.16, 0.12 * (player.speed / TOP_SPEED) ** 3);
-    for (let k = 0; k < 9; k++) {
-      const amp = k < 3 ? sway
-        : k < 6 ? (player.boostT > 0 ? 0.045 : 0)
-        : (player.slowT > 0 ? 0.08 : 0);
+    for (let k = 0; k < 6; k++) {
+      const amp = k < 3 ? sway : (player.boostT > 0 ? 0.045 : 0);
       vf.p[k % 3] += Math.sin(c._shake * SHAKE_F[k]) * amp;
+    }
+    // hitting a red crystal kicks off a violent random shake that dies down
+    if (player.slowT > c._prevSlow + 0.3) c._pain = 1;
+    c._prevSlow = player.slowT;
+    if (c._pain > 0.01) {
+      for (let i = 0; i < 3; i++) vf.p[i] += (Math.random() * 2 - 1) * PAIN_AMP * c._pain;
+      c._pain *= Math.exp(-4 * dt);
     }
     return viewFromEyeTarget(out, vf.p, vTgt, c.upLag);
   };

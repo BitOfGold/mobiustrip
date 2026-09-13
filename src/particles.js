@@ -49,7 +49,7 @@ export function emitFart(racer, hue, red) {
   const [r, g, b] = red ? RED : hueRGB(hue, col);
   spawn(0, racer.u - 0.02, racer.v + (rnd() - 0.5) * 0.3, 0.08 + rnd() * 0.1,
     -0.008 - rnd() * 0.008, (rnd() - 0.5) * 0.3, 0.1 + rnd() * 0.15,
-    0.7 + rnd() * 0.4, 0.3 + rnd() * 0.18, r, g, b, 0);
+    0.7 + rnd() * 0.4, 0.6 + rnd() * 0.36, r, g, b, 0);
 }
 
 // sparks off the rail when grinding it
